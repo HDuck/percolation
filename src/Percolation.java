@@ -1,4 +1,3 @@
-
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
@@ -124,7 +123,7 @@ public class Percolation {
     public static void main(String[] args) {
         Percolation perc = new Percolation(3);
 
-        int[][] openPath = { { 3, 1 }, { 3, 3 }, { 1, 3 }, { 2, 3 } };
+        int[][] openPath = {{3, 1}, {3, 3}, {1, 3}, {2, 3}};
 
         for (int[] path : openPath) {
             int row = path[0];
