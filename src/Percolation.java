@@ -1,4 +1,10 @@
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+
+interface Render {
+    void grid(String title);
+}
 
 public class Percolation {
     private static final int TOP_BASE_SITE_ID = 0;
@@ -118,22 +124,64 @@ public class Percolation {
 
     // test client (optional)
     public static void main(String[] args) {
-        Percolation perc = new Percolation(3);
+        int gridSize = Integer.parseInt(args[0]);
+        Percolation perc = new Percolation(gridSize);
 
-        int[][] openPath = {{3, 1}, {3, 3}, {1, 3}, {2, 3}};
-
-        for (int[] path : openPath) {
-            int row = path[0];
-            int col = path[1];
-            perc.open(row, col);
-
-            System.out.println(String.format("%s-%s opened", row, col));
-            System.out.println(String.format("%s-%s percolates: %s", row, col, perc.percolates()));
-            for (int[] path2 : openPath) {
-                int row2 = path2[0];
-                int col2 = path2[1];
-                System.out.println(String.format("* %s-%s is full: %s", row2, col2, perc.isFull(row2, col2)));
+        Render render = (String title) -> {
+            StdOut.println(title);
+            int row = 1;
+            for (int i = 0; i <= gridSize * 2; i++) {
+                int col = 1;
+                for (int j = 0; j <= gridSize * 2; j++) {
+                    if (i % 2 == 0) {
+                        if (j % 2 == 0) {
+                            StdOut.print("+");
+                        }
+                        else {
+                            StdOut.print("-");
+                        }
+                    }
+                    else if (j % 2 == 0) {
+                        StdOut.print("|");
+                    }
+                    else {
+                        if (perc.isFull(row, col)) {
+                            StdOut.print("@");
+                        }
+                        else if (perc.isOpen(row, col)) {
+                            StdOut.print(" ");
+                        }
+                        else {
+                            StdOut.print("#");
+                        }
+                        col++;
+                    }
+                }
+                if (i % 2 != 0) {
+                    row++;
+                }
+                StdOut.println();
             }
+        };
+
+        int iteration = 1;
+        while (!perc.percolates()) {
+            if (iteration % (gridSize * 2) == 0) {
+                StdOut.println();
+                render.grid(String.format("Iteration #%s", iteration));
+            }
+
+            int randomRow;
+            int randomCol;
+            do {
+                randomCol = StdRandom.uniform(1, gridSize + 1);
+                randomRow = StdRandom.uniform(1, gridSize + 1);
+            } while (perc.isOpen(randomRow, randomCol));
+
+            perc.open(randomRow, randomCol);
+            iteration++;
         }
+
+        render.grid(String.format("Percolated! Iteration #%s", iteration));
     }
 }
