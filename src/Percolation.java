@@ -2,8 +2,7 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
     private static final int TOP_BASE_SITE_ID = 0;
-    private final int[][] grid;
-    private final boolean[] openSites;
+    private final boolean[][] grid;
     private int openSitesCount = 0;
     private final int bottomBaseSiteId;
     private final int gridSize;
@@ -19,14 +18,12 @@ public class Percolation {
         int row = 1;
         int col = 1;
         int id = 1;
-        grid = new int[n + 1][n + 1];
-        openSites = new boolean[(n * n) + 1];
+        grid = new boolean[n + 1][n + 1];
         uf = new WeightedQuickUnionUF((n * n) + 2);
 
         while (row <= n) {
             while (col <= n) {
-                grid[row][col] = id;
-                openSites[id] = false;
+                grid[row][col] = false;
                 col++;
                 id++;
             }
@@ -45,14 +42,13 @@ public class Percolation {
         if (isOpen(row, col)) {
             return;
         }
-        int siteId = getGridSiteId(row, col);
-        openSites[siteId] = true;
+        grid[row][col] = true;
         openSitesCount++;
         unionBoundarySites(row, col);
     }
 
     private int getGridSiteId(int row, int col) {
-        return grid[row][col];
+        return (row - 1) * gridSize + col;
     }
 
     private void unionBoundarySites(int row, int col) {
@@ -60,14 +56,16 @@ public class Percolation {
 
         if (row == 1) {
             uf.union(TOP_BASE_SITE_ID, siteId);
-        } else if (isOpen(row - 1, col)) {
+        }
+        else if (isOpen(row - 1, col)) {
             int topSiteId = getGridSiteId(row - 1, col);
             uf.union(siteId, topSiteId);
         }
 
         if (row == gridSize) {
             uf.union(bottomBaseSiteId, siteId);
-        } else if (isOpen(row + 1, col)) {
+        }
+        else if (isOpen(row + 1, col)) {
             int bottomSiteId = getGridSiteId(row + 1, col);
             uf.union(siteId, bottomSiteId);
         }
@@ -88,8 +86,7 @@ public class Percolation {
         if (row <= 0 || row > gridSize || col <= 0 || col > gridSize) {
             throw new IllegalArgumentException();
         }
-        int siteId = getGridSiteId(row, col);
-        return openSites[siteId];
+        return grid[row][col];
     }
 
     // is the site (row, col) full?
